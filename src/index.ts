@@ -158,7 +158,7 @@ export function apply(ctx: Context, config: Config) {
   })
 
   ctx.command('gal', 'gal相关指令').subcommand('.score <游戏ID> <评分>', '对gal进行评分').alias('gal评分').userFields(['id']).channelFields(['id']).action(async ({ session, args }) => {
-    if (args[0] == undefined) {
+    if (args[0] == undefined || args[1] == undefined) {
       return session.execute('help gal.score')
     }
 
