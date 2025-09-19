@@ -136,7 +136,7 @@ export function apply(ctx: Context, config: Config) {
         keyword: args[0] || ''
       }
     })
-    return h.escape(result.data)
+    return result.data;
   })
 
   ctx.command('gal', 'gal相关指令').subcommand('.alias <游戏ID> <别名>', '对gal进行别名设置').alias('gal别名').userFields(['id']).channelFields(['id']).action(async ({ session, args }) => {

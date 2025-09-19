@@ -1,7 +1,7 @@
 {
   "name": "@kyomiko/koishi-plugin-kyomiko-middleware",
   "description": "自用中间件，无实际业务代码",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
