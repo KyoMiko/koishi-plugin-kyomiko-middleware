@@ -133,7 +133,7 @@ export function apply(ctx: Context, config: Config) {
       params: {
         id: session.user.id,
         channelId: session.channel.id,
-        keyword: args[0] || ''
+        keyword: args
       }
     })
     return result.data;
