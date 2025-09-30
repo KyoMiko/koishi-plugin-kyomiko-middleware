@@ -16,6 +16,7 @@ export const Config: Schema<Config> = Schema.object({
 declare module 'koishi' {
   interface Channel {
     serverList: {
+      uuid: string
       type: string
       host: string
       port: string
@@ -50,17 +51,33 @@ export function apply(ctx: Context, config: Config) {
     return h.escape("\n" + result.data)
   })
 
-  ctx.command('server', '服务器相关指令').subcommand('.add', '添加一个服务器到群里').alias('添加服务器').channelFields(['serverList'])
+  ctx.command('server', '服务器相关指令').subcommand('.add', '添加一个服务器到群里').alias('添加服务器').channelFields(['serverList','id'])
     .option('type', '-t <type> 服务器类型').option('ip', '-i <ip> 服务器地址').option('port', '-p <port> 服务器端口').option('name', '-n <name> 服务器名称').action(async ({ session, options }) => {
       const serverList = session.channel.serverList
       if (options.type == undefined || options.ip == undefined || options.port == undefined || options.name == undefined) {
         return session.execute('help server.add')
       }
+      const uuid = crypto.randomUUID()
       serverList.push({
+        uuid: uuid,
         type: options.type,
         host: options.ip,
         port: options.port,
         name: options.name
+      })
+      await axios.post(config.server + '/server/add', {
+        data: {
+          uuid: uuid,
+          type: options.type,
+          host: options.ip,
+          port: options.port,
+          name: options.name,
+          channelId: session.channel.id
+        }
+      }, {
+        headers: {
+          'Authorization': config.Authorization
+        }
       })
       return '添加成功'
     })
@@ -73,6 +90,13 @@ export function apply(ctx: Context, config: Config) {
     if (args[0] > serverList.length) {
       return '不存在该服务器'
     }
+    await axios.post(config.server + '/server/del', {
+      uuid: serverList[args[0] - 1].uuid
+    }, {
+      headers: {
+        'Authorization': config.Authorization
+      }
+    })
     serverList.splice(args[0] - 1, 1)
     await session.channel.$update()
     const detail = await session.execute('server.detail')
